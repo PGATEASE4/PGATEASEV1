@@ -1,0 +1,497 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 221.2 100% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 1rem;
+    --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.16);
+    --gradient: linear-gradient(135deg, #6366f1 0%, #0ea5e9 100%);
+    --font-sans: "Inter", "Poppins", "Segoe UI", "Helvetica Neue", Arial,
+      sans-serif;
+    --font-heading: "Poppins", "Montserrat", "Inter", Arial, sans-serif;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 70%;
+    --accent: 221.2 100% 65%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 50.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 20%;
+    --input: 240 3.7% 15.9%;
+    --ring: 217.2 91.2% 59.8%;
+    --shadow: 0 8px 40px 0 rgba(0, 0, 0, 0.32);
+    --gradient: linear-gradient(135deg, #6366f1 0%, #0ea5e9 100%);
+    --font-sans: "Inter", "Poppins", "Segoe UI", "Helvetica Neue", Arial,
+      sans-serif;
+    --font-heading: "Poppins", "Montserrat", "Inter", Arial, sans-serif;
+  }
+}
+
+@layer base {
+  html,
+  body {
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.01em;
+    font-weight: 700;
+  }
+  * {
+    @apply border-[hsl(var(--border))] transition-all duration-200;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    background: var(--background);
+    color: var(--foreground);
+    min-height: 100vh;
+    transition: background 0.3s, color 0.3s;
+  }
+  body.dark,
+  .dark body {
+    color-scheme: dark;
+  }
+  .card,
+  .bg-card {
+    background: var(--card);
+    color: var(--card-foreground);
+    box-shadow: var(--shadow);
+    border-radius: var(--radius);
+    transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+    border: 1.5px solid hsl(var(--border));
+    padding: 2rem 1.5rem;
+    margin-bottom: 2rem;
+    @apply hover:shadow-lg hover:scale-[1.02] focus-within:shadow-xl;
+  }
+  /* Semantic utility classes for status badges */
+  .status-success {
+    @apply bg-card border-emerald-200 text-emerald-800;
+  }
+  .dark .status-success {
+    @apply border-emerald-800 text-emerald-200;
+  }
+
+  .status-warning {
+    @apply bg-card border-amber-200 text-amber-800;
+  }
+  .dark .status-warning {
+    @apply border-amber-800 text-amber-200;
+  }
+
+  .status-error {
+    @apply bg-card border-red-200 text-red-800;
+  }
+  .dark .status-error {
+    @apply border-red-800 text-red-200;
+  }
+
+  .status-info {
+    @apply bg-card border-blue-200 text-blue-800;
+  }
+  .dark .status-info {
+    @apply border-blue-800 text-blue-200;
+  }
+
+  .status-neutral {
+    @apply bg-card border-gray-200 text-gray-800;
+  }
+  .dark .status-neutral {
+    @apply border-gray-600 text-gray-200;
+  }
+
+  .status-pending {
+    @apply bg-card border-purple-200 text-purple-800;
+  }
+  .dark .status-pending {
+    @apply border-purple-800 text-purple-200;
+  }
+
+  /* Table styles */
+  .table-header {
+    @apply bg-muted/30 text-muted-foreground;
+  }
+
+  .table-row {
+    @apply hover:bg-muted/30;
+  }
+
+  /* Icon colors for different types */
+  .icon-success {
+    @apply text-emerald-500;
+  }
+  .icon-warning {
+    @apply text-amber-500;
+  }
+  .icon-error {
+    @apply text-red-500;
+  }
+  .icon-info {
+    @apply text-blue-500;
+  }
+  .icon-neutral {
+    @apply text-muted-foreground;
+  }
+
+  .gradient-bg {
+    background: var(--gradient);
+  }
+  .btn,
+  .button,
+  button,
+  [type="button"],
+  [type="submit"] {
+    border-radius: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+    @apply bg-primary text-primary-foreground hover:bg-accent hover:text-accent-foreground focus:ring-2 focus:ring-accent;
+  }
+  .btn-outline,
+  .button-outline {
+    @apply border border-accent bg-background text-accent hover:bg-accent hover:text-white;
+  }
+  .btn-ghost,
+  .button-ghost {
+    @apply bg-transparent text-accent hover:bg-accent/10;
+  }
+  .input,
+  input,
+  textarea,
+  select {
+    border-radius: 0.5rem;
+    background: var(--input);
+    color: var(--foreground);
+    border: 1.5px solid hsl(var(--border));
+    padding: 0.75rem 1rem;
+    transition: background 0.2s, color 0.2s, border 0.2s;
+    @apply focus:ring-2 focus:ring-accent;
+  }
+  .input:focus,
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: hsl(var(--accent));
+    background: var(--card);
+    color: var(--accent-foreground);
+  }
+  /* Force high-contrast text for all form elements and components */
+  .dark input,
+  .dark select,
+  .dark textarea,
+  .dark option,
+  .dark button,
+  .dark [type="button"],
+  .dark [type="submit"] {
+    color: #ffffff !important;
+    background-color: #18181b !important;
+    border-color: #404040 !important;
+  }
+  .dark select:focus,
+  .dark input:focus,
+  .dark textarea:focus {
+    color: #ffffff !important;
+    background-color: #27272a !important;
+    border-color: #6366f1 !important;
+  }
+  .dark option {
+    background-color: #27272a !important;
+    color: #ffffff !important;
+  }
+
+  /* Enhanced text visibility in dark mode */
+  .dark h1,
+  .dark h2,
+  .dark h3,
+  .dark h4,
+  .dark h5,
+  .dark h6 {
+    color: #ffffff !important;
+  }
+  .dark p,
+  .dark span,
+  .dark div,
+  .dark label,
+  .dark a {
+    color: #e5e5e5 !important;
+  }
+  .dark .text-muted-foreground {
+    color: #a1a1aa !important;
+  }
+  .dark .text-secondary-foreground {
+    color: #f4f4f5 !important;
+  }
+  .dark .text-card-foreground {
+    color: #ffffff !important;
+  }
+
+  /* Light mode contrast improvements */
+  .light input,
+  .light select,
+  .light textarea,
+  .light option {
+    color: #1f2937 !important;
+    background-color: #ffffff !important;
+    border-color: #d1d5db !important;
+  }
+  .light .text-muted-foreground {
+    color: #6b7280 !important;
+  }
+  .light h1,
+  .light h2,
+  .light h3,
+  .light h4,
+  .light h5,
+  .light h6 {
+    color: #111827 !important;
+  }
+  .light p,
+  .light span,
+  .light div,
+  .light label,
+  .light a {
+    color: #374151 !important;
+  }
+
+  /* Button contrast improvements */
+  .dark .bg-primary {
+    background-color: #6366f1 !important;
+    color: #ffffff !important;
+  }
+  .dark .bg-secondary {
+    background-color: #374151 !important;
+    color: #ffffff !important;
+  }
+  .light .bg-primary {
+    background-color: #4f46e5 !important;
+    color: #ffffff !important;
+  }
+  .light .bg-secondary {
+    background-color: #f3f4f6 !important;
+    color: #1f2937 !important;
+  }
+}
+
+@layer components {
+  /* Better visibility for emergency alerts in dark mode */
+  .emergency-alert {
+    @apply border border-border bg-card text-card-foreground;
+  }
+  .emergency-alert.active {
+    @apply border-red-200 bg-red-50/10 text-red-600;
+  }
+  .dark .emergency-alert.active {
+    @apply border-red-800 bg-red-950/50 text-red-200;
+  }
+
+  /* Enhanced badge visibility */
+  .badge-high {
+    @apply bg-red-100 text-red-900 border-red-200;
+  }
+  .dark .badge-high {
+    @apply bg-red-950/50 text-red-200 border-red-800;
+  }
+
+  .badge-medium {
+    @apply bg-amber-100 text-amber-900 border-amber-200;
+  }
+  .dark .badge-medium {
+    @apply bg-amber-950/50 text-amber-200 border-amber-800;
+  }
+
+  .badge-low {
+    @apply bg-blue-100 text-blue-900 border-blue-200;
+  }
+  .dark .badge-low {
+    @apply bg-blue-950/50 text-blue-200 border-blue-800;
+  }
+
+  .badge-resolved {
+    @apply bg-green-100 text-green-900 border-green-200;
+  }
+  .dark .badge-resolved {
+    @apply bg-green-950/50 text-green-200 border-green-800;
+  }
+
+  .badge-pending {
+    @apply bg-purple-100 text-purple-900 border-purple-200;
+  }
+  .dark .badge-pending {
+    @apply bg-purple-950/50 text-purple-200 border-purple-800;
+  }
+
+  /* Food preferences and dietary badges */
+  .badge-vegetarian {
+    @apply bg-green-100 text-green-900 border-green-200;
+  }
+  .dark .badge-vegetarian {
+    @apply bg-green-950/50 text-green-200 border-green-800;
+  }
+
+  .badge-non-vegetarian {
+    @apply bg-red-100 text-red-900 border-red-200;
+  }
+  .dark .badge-non-vegetarian {
+    @apply bg-red-950/50 text-red-200 border-red-800;
+  }
+
+  .badge-allergy {
+    @apply bg-amber-100 text-amber-900 border-amber-200;
+  }
+  .dark .badge-allergy {
+    @apply bg-amber-950/50 text-amber-200 border-amber-800;
+  }
+
+  /* Meal and laundry status badges */
+  .badge-delivered {
+    @apply bg-green-100 text-green-900 border-green-200;
+  }
+  .dark .badge-delivered {
+    @apply bg-green-950/50 text-green-200 border-green-800;
+  }
+
+  .badge-in-process {
+    @apply bg-blue-100 text-blue-900 border-blue-200;
+  }
+  .dark .badge-in-process {
+    @apply bg-blue-950/50 text-blue-200 border-blue-800;
+  }
+
+  .badge-picked {
+    @apply bg-purple-100 text-purple-900 border-purple-200;
+  }
+  .dark .badge-picked {
+    @apply bg-purple-950/50 text-purple-200 border-purple-800;
+  }
+
+  .badge-requested {
+    @apply bg-amber-100 text-amber-900 border-amber-200;
+  }
+  .dark .badge-requested {
+    @apply bg-amber-950/50 text-amber-200 border-amber-800;
+  }
+
+  /* Payment status badges */
+  .badge-paid {
+    @apply bg-green-100 text-green-900 border-green-200;
+  }
+  .dark .badge-paid {
+    @apply bg-green-950/50 text-green-200 border-green-800;
+  }
+
+  .badge-overdue {
+    @apply bg-red-100 text-red-900 border-red-200;
+  }
+  .dark .badge-overdue {
+    @apply bg-red-950/50 text-red-200 border-red-800;
+  }
+
+  /* Complaint status badges */
+  .badge-new {
+    @apply bg-blue-100 text-blue-900 border-blue-200;
+  }
+  .dark .badge-new {
+    @apply bg-blue-950/50 text-blue-200 border-blue-800;
+  }
+
+  .badge-in-progress {
+    @apply bg-amber-100 text-amber-900 border-amber-200;
+  }
+  .dark .badge-in-progress {
+    @apply bg-amber-950/50 text-amber-200 border-amber-800;
+  }
+
+  /* Emergency response status */
+  .badge-responded {
+    @apply bg-green-100 text-green-900 border-green-200;
+  }
+  .dark .badge-responded {
+    @apply bg-green-950/50 text-green-200 border-green-800;
+  }
+
+  /* Ensure table elements are properly visible */
+  .table-cell-text {
+    @apply text-foreground;
+  }
+  .dark .table-cell-text {
+    @apply text-gray-200;
+  }
+
+  /* Status counts and statistics text */
+  .status-count {
+    @apply text-foreground font-medium;
+  }
+  .dark .status-count {
+    @apply text-gray-100;
+  }
+
+  /* Weekly reset and laundry limit text */
+  .limit-text {
+    @apply text-muted-foreground;
+  }
+  .dark .limit-text {
+    @apply text-gray-400;
+  }
+
+  /* Reminder and confirmation text */
+  .confirmation-text {
+    @apply text-foreground;
+  }
+  .dark .confirmation-text {
+    @apply text-gray-200;
+  }
+}
+
+.animate-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
