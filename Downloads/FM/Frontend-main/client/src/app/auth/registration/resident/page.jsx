@@ -20,7 +20,10 @@ export default function ResidentRegistrationPage() {
       // Step 1: Create Appwrite account
       const user = await account.create('unique()', email, password, name);
       
-      // Step 2: Add user to resident team
+      // Step 2: Create an email session to authenticate the user
+      await account.createEmailSession(email, password);
+      
+      // Step 3: Add user to resident team (now authenticated)
       await teams.createMembership(
         process.env.NEXT_PUBLIC_TEAM_RESIDENT || 'pgateaseteam1resident',
         email,
@@ -28,7 +31,7 @@ export default function ResidentRegistrationPage() {
         process.env.NEXT_PUBLIC_VERIFY_URL || 'https://pgateasev-1.vercel.app/auth/verify'
       );
 
-      // Step 3: Create user document with RESTRICTIVE permissions
+      // Step 4: Create user document with RESTRICTIVE permissions
       await databases.createDocument(
         process.env.NEXT_PUBLIC_DB_ID || '688302d20028c1439891',
         process.env.NEXT_PUBLIC_USERS_COL_ID || 'pgateaseuserscollection',
