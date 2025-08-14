@@ -21,7 +21,7 @@ export default function AdminRegistrationPage() {
       const user = await account.create('unique()', email, password, name);
       
       // Step 2: Create an email session to authenticate the user
-      await account.createEmailSession(email, password);
+      await account.createSession(email, password);
       
       // Step 3: Add user to admin team (now authenticated)
       await teams.createMembership(

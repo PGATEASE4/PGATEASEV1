@@ -14,7 +14,7 @@ export default function LoginPage() {
   const onLogin = async () => {
     setLoading(true); setErr('');
     try {
-      await account.createEmailSession(email, password);
+      await account.createSession(email, password);
 
       // Fetch memberships (must be confirmed via email!)
       const m = await teams.list(); // { total, teams? memberships? } -> we want .memberships
