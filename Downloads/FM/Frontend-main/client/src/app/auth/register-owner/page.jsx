@@ -1,39 +1,79 @@
 'use client';
-
-import { useState } from 'react';
-import { account, teams } from '@/lib/appwrite';
+import { account, teams, databases, ID, Permission, Role } from '@/lib/appwrite';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
-export default function RegisterOwner() {
+export default function OwnerRegistrationPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
-  const handleRegister = async () => {
+  const register = async () => {
+    setLoading(true);
+    setError('');
+    setSuccess(false);
     try {
-      await account.create('unique()', email, password, name);
-
+      // Step 1: Create Appwrite account
+      const user = await account.create('unique()', email, password, name);
+      
+      // Step 2: Add user to owner team
       await teams.createMembership(
-        'pgateaseteam2owner', // ✅ Actual Team ID for owner
+        process.env.NEXT_PUBLIC_TEAM_OWNER || 'pgateaseteam2owner',
         email,
         ['owner'],
-        'https://pgateasev-1.vercel.app/auth/verify'
+        process.env.NEXT_PUBLIC_VERIFY_URL || 'https://pgateasev-1.vercel.app/auth/verify'
       );
 
-      alert('Owner account created. Please verify your email.');
-      router.push('/auth/login');
+      // Step 3: Create user document with owner permissions
+      await databases.createDocument(
+        process.env.NEXT_PUBLIC_DB_ID || '688302d20028c1439891',
+        process.env.NEXT_PUBLIC_USERS_COL_ID || 'pgateaseuserscollection',
+        ID.unique(),
+        {
+          name: name,
+          email: email,
+          role: 'owner',
+          userId: user.$id
+        },
+        [
+          // Self-access
+          Permission.read(Role.user(user.$id)),
+          Permission.update(Role.user(user.$id)),
+          
+          // Residents can read owners (for contact info)
+          Permission.read(Role.team(process.env.NEXT_PUBLIC_TEAM_RESIDENT || 'pgateaseteam1resident')),
+          
+          // Admins can do everything
+          Permission.read(Role.team(process.env.NEXT_PUBLIC_TEAM_ADMIN || 'pgateaseteam4admin')),
+          Permission.update(Role.team(process.env.NEXT_PUBLIC_TEAM_ADMIN || 'pgateaseteam4admin')),
+          Permission.delete(Role.team(process.env.NEXT_PUBLIC_TEAM_ADMIN || 'pgateaseteam4admin'))
+        ]
+      );
+
+      setSuccess(true);
     } catch (err) {
-      console.error('Owner registration error:', err.message);
+      console.error('Registration error:', err);
+      setError(err.message || 'Registration failed');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="p-4">
+    <div>
+      <h2>Owner Registration</h2>
       <input placeholder="Name" onChange={(e) => setName(e.target.value)} />
       <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
       <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
-      <button onClick={handleRegister}>Register as Owner</button>
+      <button onClick={register} disabled={loading}>
+        {loading ? 'Registering...' : 'Register'}
+      </button>
+      {error && <div style={{ color: 'red' }}>{error}</div>}
+      {success && <div style={{ color: 'green' }}>Registration successful! Check your email for verification.</div>}
     </div>
   );
-} 
+}

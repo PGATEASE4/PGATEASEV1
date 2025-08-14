@@ -1,8 +1,8 @@
 import { Client, Account, Databases, Teams, ID, Permission, Role } from 'appwrite';
 
 const client = new Client()
-  .setEndpoint('https://cloud.appwrite.io/v1')  // Always same
-  .setProject('pgatease2004');// Your actual Project ID
+  .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1')
+  .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT || 'pgatease2004');
 
 const account = new Account(client);
 const databases = new Databases(client);

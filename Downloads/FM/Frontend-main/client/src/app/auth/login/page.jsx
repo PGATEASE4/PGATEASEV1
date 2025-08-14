@@ -1,45 +1,48 @@
 'use client';
-import { account, teams } from '@/lib/appwrite';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { account, teams } from '@/lib/appwrite';
+import { pickRoleFromMemberships, ROLE_ROUTE } from '@/lib/role';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail]   = useState('');
+  const [password, setPass] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState('');
 
-  const login = async () => {
+  const onLogin = async () => {
+    setLoading(true); setErr('');
     try {
       await account.createEmailSession(email, password);
-      const userTeams = await teams.list(); // Get the user's teams
-      const role = userTeams.teams[0]?.name; // Get the first team's name
 
-      // Redirect based on the user's role
-      if (role === 'resident') {
-        router.push('/resident/dashboard');
-      } else if (role === 'owner') {
-        router.push('/owner/dashboard');
-      } else if (role === 'manager') {
-        router.push('/manager/dashboard');
-      } else if (role === 'admin') {
-        router.push('/admin/dashboard');
-      } else {
-        // Default redirect if no role matches
-        router.push('/dashboard');
+      // Fetch memberships (must be confirmed via email!)
+      const m = await teams.list(); // { total, teams? memberships? } -> we want .memberships
+      const memberships = m?.memberships ?? m?.teams ?? [];
+      const role = pickRoleFromMemberships(memberships);
+
+      if (!role) {
+        // No confirmed team yet → send them to verify page or a holding page
+        router.push('/auth/verify'); 
+        return;
       }
-    } catch (err) {
-      console.error('Login failed:', err);
-      setError('Login failed. Please check your credentials.');
+      router.push(ROLE_ROUTE[role]);
+    } catch (e) {
+      setErr(e?.message || 'Login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div>
-      <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-      <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
-      <button onClick={login}>Login</button>
-      {error && <div style={{ color: 'red' }}>{error}</div>}
+    <div className="max-w-sm mx-auto mt-24 space-y-3">
+      <h1 className="text-2xl font-semibold">Log in</h1>
+      <input className="border p-2 w-full rounded" placeholder="Email" onChange={e=>setEmail(e.target.value)} />
+      <input className="border p-2 w-full rounded" type="password" placeholder="Password" onChange={e=>setPass(e.target.value)} />
+      <button className="w-full rounded p-2 border" onClick={onLogin} disabled={loading}>
+        {loading ? 'Checking…' : 'Login'}
+      </button>
+      {err && <p className="text-red-600 text-sm">{err}</p>}
     </div>
   );
 }

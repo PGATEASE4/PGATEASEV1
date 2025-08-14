@@ -1,5 +1,5 @@
 'use client';
-import { account, teams } from '@/lib/appwrite';
+import { account, teams, databases, ID, Permission, Role } from '@/lib/appwrite';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -17,17 +17,47 @@ export default function ResidentRegistrationPage() {
     setError('');
     setSuccess(false);
     try {
-      // Step 1: Register user
-      await account.create('unique()', email, password, name);
-      // Step 2: Add user to the 'resident' team
+      // Step 1: Create Appwrite account
+      const user = await account.create('unique()', email, password, name);
+      
+      // Step 2: Add user to resident team
       await teams.createMembership(
-        'pgateaseteam1resident', // ✅ Actual Team ID for resident
+        process.env.NEXT_PUBLIC_TEAM_RESIDENT || 'pgateaseteam1resident',
         email,
         ['resident'],
-        'https://pgateasev-1.vercel.app/auth/verify' // Updated URL
+        process.env.NEXT_PUBLIC_VERIFY_URL || 'https://pgateasev-1.vercel.app/auth/verify'
       );
+
+      // Step 3: Create user document with RESTRICTIVE permissions
+      await databases.createDocument(
+        process.env.NEXT_PUBLIC_DB_ID || '688302d20028c1439891',
+        process.env.NEXT_PUBLIC_USERS_COL_ID || 'pgateaseuserscollection',
+        ID.unique(),
+        {
+          name: name,
+          email: email,
+          role: 'resident',
+          userId: user.$id
+        },
+        [
+          // Self-access ONLY
+          Permission.read(Role.user(user.$id)),
+          Permission.update(Role.user(user.$id)),
+          
+          // Owners can read/manage residents
+          Permission.read(Role.team(process.env.NEXT_PUBLIC_TEAM_OWNER || 'pgateaseteam2owner')),
+          Permission.update(Role.team(process.env.NEXT_PUBLIC_TEAM_OWNER || 'pgateaseteam2owner')),
+          
+          // Admins can do everything
+          Permission.read(Role.team(process.env.NEXT_PUBLIC_TEAM_ADMIN || 'pgateaseteam4admin')),
+          Permission.update(Role.team(process.env.NEXT_PUBLIC_TEAM_ADMIN || 'pgateaseteam4admin')),
+          Permission.delete(Role.team(process.env.NEXT_PUBLIC_TEAM_ADMIN || 'pgateaseteam4admin'))
+        ]
+      );
+
       setSuccess(true);
     } catch (err) {
+      console.error('Registration error:', err);
       setError(err.message || 'Registration failed');
     } finally {
       setLoading(false);
